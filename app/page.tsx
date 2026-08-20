@@ -27,6 +27,19 @@ type HeroProps = {
   };
 };
 
+type FeatureIconName = "energy" | "security" | "layout";
+
+type FeatureItem = {
+  title: string;
+  description: string;
+  icon: FeatureIconName;
+};
+
+type FeaturesProps = {
+  title: string;
+  items: readonly FeatureItem[];
+};
+
 const navigationItems = [
   { label: "Переваги", href: "#advantages" },
   { label: "Локація", href: "#location" },
@@ -45,6 +58,29 @@ const heroContent = {
     alt: "Сучасний бізнес-центр із панорамним склінням у вечірньому світлі",
   },
 } satisfies HeroProps;
+
+const featuresContent = {
+  title: "Чому обирають наш бізнес-центр",
+  items: [
+    {
+      icon: "energy",
+      title: "Автономне енергопостачання",
+      description:
+        "Власний генератор та ДБЖ — жодного простою під час відключень.",
+    },
+    {
+      icon: "security",
+      title: "Охорона 24/7",
+      description:
+        "Відеоспостереження та доступ за картками у будь-який час.",
+    },
+    {
+      icon: "layout",
+      title: "Гнучкі планування",
+      description: "Офіси від 50 до 500 м² під потреби вашої команди.",
+    },
+  ],
+} as const satisfies FeaturesProps;
 
 function Navbar({ brandName, items }: NavbarProps) {
   return (
@@ -196,12 +232,84 @@ function Hero({
   );
 }
 
+function FeatureIcon({ name }: { name: FeatureIconName }) {
+  const paths = {
+    energy: <path d="m13 2-9 12h7l-1 8 10-12h-7V2Z" />,
+    security: (
+      <>
+        <path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z" />
+        <path d="m9 12 2 2 4-4" />
+      </>
+    ),
+    layout: (
+      <>
+        <rect width="18" height="18" x="3" y="3" rx="2" />
+        <path d="M9 3v18M9 9h12" />
+      </>
+    ),
+  } as const;
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="size-7"
+    >
+      {paths[name]}
+    </svg>
+  );
+}
+
+function Features({ title, items }: FeaturesProps) {
+  return (
+    <section
+      id="advantages"
+      aria-labelledby="features-heading"
+      className="scroll-mt-20 bg-slate-50 px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28"
+    >
+      <div className="mx-auto w-full max-w-7xl">
+        <h2
+          id="features-heading"
+          className="mb-12 text-center text-3xl font-bold tracking-[-0.025em] text-slate-900 sm:text-4xl lg:text-5xl"
+        >
+          {title}
+        </h2>
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:gap-10">
+          {items.map((item) => (
+            <article
+              key={item.title}
+              className="group flex min-h-full flex-col rounded-2xl border border-slate-200/70 bg-white p-8 shadow-md shadow-slate-900/5 transition-all duration-300 motion-safe:hover:-translate-y-2 hover:border-sky-200 hover:shadow-xl hover:shadow-slate-900/10"
+            >
+              <div className="mb-7 flex size-14 items-center justify-center rounded-full bg-sky-100 text-sky-700 transition-colors duration-300 group-hover:bg-sky-700 group-hover:text-white">
+                <FeatureIcon name={item.icon} />
+              </div>
+              <h3 className="text-xl font-bold leading-snug tracking-[-0.015em] text-slate-900">
+                {item.title}
+              </h3>
+              <p className="mt-4 text-base leading-7 text-slate-600">
+                {item.description}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   return (
     <>
       <Navbar brandName="BC WAVE" items={navigationItems} />
       <main>
         <Hero {...heroContent} />
+        <Features {...featuresContent} />
       </main>
     </>
   );
